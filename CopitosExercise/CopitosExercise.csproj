@@ -84,10 +84,10 @@
     <Compile Include="BusinessLogic\ExcelReader.cs" />
     <Compile Include="BusinessLogic\Interfaces\ICsvReader.cs" />
     <Compile Include="BusinessLogic\Interfaces\IExcelReader.cs" />
-    <Compile Include="MainView.cs">
+    <Compile Include="Views\MainView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainView.Designer.cs">
+    <Compile Include="Views\MainView.Designer.cs">
       <DependentUpon>MainView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -98,8 +98,7 @@
     <Compile Include="Controls\DataMerger.Designer.cs">
       <DependentUpon>DataMerger.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\ViewUtils.cs" />
-    <EmbeddedResource Include="MainView.resx">
+    <EmbeddedResource Include="Views\MainView.resx">
       <DependentUpon>MainView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -131,7 +130,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Resources\green_tick.png" />
+    <None Include="Resources\green_tick.png" />
     <Content Include="Resources\home_icon.png" />
     <Content Include="Resources\error.png" />
   </ItemGroup>
