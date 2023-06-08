@@ -215,7 +215,8 @@ namespace CopitosExercise.Views.Controls
             }
             catch(Exception ex)
             {
-
+                MessageBox.Show("Ein Fehler ist aufgetreten");
+                Console.WriteLine(ex.ToString());
             }
         }
 
