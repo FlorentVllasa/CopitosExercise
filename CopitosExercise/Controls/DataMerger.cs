@@ -19,6 +19,8 @@ namespace CopitosExercise.Views.Controls
         public IExcelReader ExcelReader { get; set; }
         public ICsvReader CsvReader { get; set; }
 
+        public int SelectedCell;
+
         public DataMerger()
         {
             InitializeComponent();
@@ -70,28 +72,54 @@ namespace CopitosExercise.Views.Controls
                 DataTable excelData = ExcelReader.ReadExcel(ExcelPath, "PSt");
                 DataTable csvData = CsvReader.ReadCsv(CsvPath, "Einkäufe");
 
-                var mergeResult = from excelTable in excelData.AsEnumerable()
-                             join csvTable in csvData.AsEnumerable() 
-                             on excelTable["Kartennummer"] equals csvTable["Kartennummer"]
-                             select new
-                             {
-                                 Name = excelTable["Name"],
-                                 Vorname = excelTable["Vorname"],
-                                 Straße = excelTable["Straße"],
-                                 Hausnummer = excelTable["Hausnummer"],
-                                 PLZ = excelTable["PLZ"],
-                                 Ort = excelTable["Ort"],
-                                 Land = excelTable["Land"],
-                                 Kartennummer = excelTable["Kartennummer"],
-                                 Betrag = csvTable["Betrag"]
-                             };
+                if (!CheckExcelFormat(excelData))
+                {
+                    MessageBox.Show("Das Format der Excel stimmt nicht");
+                    return;
+                }
 
-                var bindingSource = new BindingSource();
-                bindingSource.DataSource = mergeResult;
-                grdMergedData.DataSource = bindingSource;
+                if (!CheckCsvFormat(csvData))
+                {
+                    MessageBox.Show("Das Format der Csv stimmt nicht");
+                    return;
+                }
+
+                var mergeResult = from excelTable in excelData.AsEnumerable()
+                                    join csvTable in csvData.AsEnumerable()
+                                    on excelTable["Kartennummer"] equals csvTable["Kartennummer"]
+                                    select new
+                                    {
+                                        Name = excelTable["Name"],
+                                        Vorname = excelTable["Vorname"],
+                                        Straße = excelTable["Straße"],
+                                        Hausnummer = excelTable["Hausnummer"],
+                                        PLZ = excelTable["PLZ"],
+                                        Ort = excelTable["Ort"],
+                                        Land = excelTable["Land"],
+                                        Kartennummer = excelTable["Kartennummer"],
+                                        Betrag = csvTable["Betrag"]
+                                    };
+
+                DataTable mergedTable = new DataTable();
+                mergedTable.Columns.Add("Name");
+                mergedTable.Columns.Add("Vorname");
+                mergedTable.Columns.Add("Straße");
+                mergedTable.Columns.Add("Hausnummer");
+                mergedTable.Columns.Add("PLZ");
+                mergedTable.Columns.Add("Ort");
+                mergedTable.Columns.Add("Land");
+                mergedTable.Columns.Add("Kartennummer").ReadOnly = true;
+                mergedTable.Columns.Add("Betrag").ReadOnly = true;
+
+                foreach (var item in mergeResult)
+                {
+                    mergedTable.Rows.Add(item.Name, item.Vorname, item.Straße, item.Hausnummer, item.PLZ, item.Ort, item.Land, item.Kartennummer, item.Betrag);
+                }
+
+                grdMergedData.DataSource = mergedTable;
 
             }
-            catch (System.IO.IOException ioException)
+            catch (IOException ioException)
             {
                 MessageBox.Show("Bitte alle hochgeladenen Dateien schließen.");
                 Console.WriteLine(ioException.ToString());
@@ -103,8 +131,48 @@ namespace CopitosExercise.Views.Controls
             }
         }
 
+        public bool CheckExcelFormat(DataTable excelData)
+        {
+            List<string> columnNames = new List<string>()
+            {
+                "Name","Vorname","Straße", "Hausnummer", "PLZ", "Ort", "Land", "Kartennummer"
+            };
+
+            foreach(var column in columnNames)
+            {
+                if (!excelData.Columns.Contains(column))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool CheckCsvFormat(DataTable csvData)
+        {
+            List<string> columnNames = new List<string>()
+            {
+                "Betrag","Kartennummer"
+            };
+
+            foreach (var column in columnNames)
+            {
+                if (!csvData.Columns.Contains(column))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void btnSaveAsPdf_Click(object sender, EventArgs e)
         {
+            if(grdMergedData.ColumnCount == 0)
+            {
+                MessageBox.Show("Bitte zuerst die Dateien hochladen und danach die Dateien zusammenführen.");
+                return;
+            }
+
             try
             {
                 if (dlgSavePdf.ShowDialog() == DialogResult.OK)
@@ -159,6 +227,45 @@ namespace CopitosExercise.Views.Controls
             grdMergedData.DataSource = null;
             btnIconExcel.Image = Properties.Resources.error;
             btnIconCsv.Image = Properties.Resources.error;
+        }
+
+        private void grdMergedData_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            SelectedCell = e.RowIndex;
+        }
+
+        private void grdMergedData_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            grdMergedData.CellValueChanged -= grdMergedData_CellValueChanged;
+
+            DataGridViewColumn changedUserNameColumn = new DataGridViewColumn();
+            changedUserNameColumn.HeaderText = "Windowsname";
+            changedUserNameColumn.Name = "Windowsname";
+            changedUserNameColumn.CellTemplate = new DataGridViewTextBoxCell();
+            changedUserNameColumn.ReadOnly = true;
+
+            DataGridViewColumn changedTimestamp = new DataGridViewColumn();
+            changedTimestamp.HeaderText = "Aktuelles Datum";
+            changedTimestamp.Name = "Aktuelles Datum";
+            changedTimestamp.CellTemplate = new DataGridViewTextBoxCell();
+            changedTimestamp.ReadOnly = true;
+
+            if (!grdMergedData.Columns.Contains("Windowsname"))
+            {
+                grdMergedData.Columns.Add(changedUserNameColumn);
+            }
+
+            if (!grdMergedData.Columns.Contains("Aktuelles Datum"))
+            {
+                grdMergedData.Columns.Add(changedTimestamp);
+            }
+
+            var rowIndex = SelectedCell;
+
+            grdMergedData.Rows[rowIndex].Cells[9].Value = Environment.UserName;
+            grdMergedData.Rows[rowIndex].Cells[10].Value = DateTime.Now;
+
+            grdMergedData.CellValueChanged += grdMergedData_CellValueChanged;
         }
     }
 }

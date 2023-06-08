@@ -47,7 +47,7 @@
             this.panel1.Controls.Add(this.btnShowMergerView);
             this.panel1.Location = new System.Drawing.Point(-1, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(200, 556);
+            this.panel1.Size = new System.Drawing.Size(200, 589);
             this.panel1.TabIndex = 0;
             // 
             // btnHomepage
@@ -80,7 +80,7 @@
             this.pnlContent.Controls.Add(this.lblInitialMessage);
             this.pnlContent.Location = new System.Drawing.Point(206, 0);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(910, 556);
+            this.pnlContent.Size = new System.Drawing.Size(1127, 589);
             this.pnlContent.TabIndex = 1;
             // 
             // lblInitialMessage
@@ -90,7 +90,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblInitialMessage.AutoSize = true;
             this.lblInitialMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInitialMessage.Location = new System.Drawing.Point(89, 150);
+            this.lblInitialMessage.Location = new System.Drawing.Point(161, 157);
             this.lblInitialMessage.Name = "lblInitialMessage";
             this.lblInitialMessage.Size = new System.Drawing.Size(597, 168);
             this.lblInitialMessage.TabIndex = 0;
@@ -100,7 +100,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1117, 555);
+            this.ClientSize = new System.Drawing.Size(1334, 588);
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.panel1);
             this.Name = "MainView";
